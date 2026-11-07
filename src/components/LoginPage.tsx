@@ -74,26 +74,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
     }
   };
 
-  // Google / Social Instant Login
-  const handleSocialLogin = (provider: 'Google' | 'Apple' | 'Facebook') => {
-    setIsSubmitting(true);
-    setErrorMessage(null);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      const isInst = role === 'instructor';
-      const safeUser: User = {
-        id: `user-${provider.toLowerCase()}-${role}-${Date.now()}`,
-        username: isInst ? 'instructor' : 'registrar',
-        fullName: isInst ? 'Prof. Angel Gumantason' : 'Dr. Evelyn Reed',
-        role: role,
-        title: isInst ? 'Visiting Lecturer' : 'Head Registrar & Records Officer',
-        department: isInst ? 'Department of SSG' : 'Office of the Registrar',
-        email: isInst ? 'Angelko@gmail.com.edu' : 'registrar@oakridge.edu',
-        createdAt: new Date().toISOString(),
-      };
-      onLoginSuccess(safeUser);
-    }, 350);
-  };
+
 
   // Sign In Submission
   const handleSignInSubmit = (e: React.FormEvent) => {
@@ -269,52 +250,7 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
               <span>Get Started</span>
             </button>
 
-            {/* Divider: Or */}
-            <div className="relative flex items-center justify-center my-4">
-              <div className="border-t border-slate-200 w-full" />
-              <span className="bg-white px-3 text-xs text-slate-400 font-medium absolute">
-                Or
-              </span>
-            </div>
 
-            {/* Social SSO Pill Buttons (Google, Apple, Facebook) */}
-            <div className="space-y-2.5">
-              <button
-                type="button"
-                onClick={() => handleSocialLogin('Google')}
-                className="w-full py-2.5 px-4 rounded-full border border-slate-200 hover:bg-slate-50 active:scale-[0.99] transition flex items-center justify-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-700 shadow-xs cursor-pointer min-h-[44px]"
-              >
-                <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
-                  <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.36 24 12 24z"/>
-                  <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.14-1.55.38-2.27V6.58H1.25C.45 8.16 0 9.97 0 12s.45 3.84 1.25 5.42l4.03-3.15z"/>
-                  <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.36 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
-                </svg>
-                <span>Continue with Google</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleSocialLogin('Apple')}
-                className="w-full py-2.5 px-4 rounded-full border border-slate-200 hover:bg-slate-50 active:scale-[0.99] transition flex items-center justify-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-700 shadow-xs cursor-pointer min-h-[44px]"
-              >
-                <svg className="w-4 h-4 shrink-0 fill-current text-slate-900" viewBox="0 0 170 170">
-                  <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.03-7.61-7.74-11.73-14.14-5.35-8.36-9.57-17.58-12.67-27.65-3.09-10.07-4.64-19.78-4.64-29.13 0-12.7 3.3-23.47 9.89-32.32 6.6-8.85 14.93-13.33 25-13.46 5.18 0 10.65 1.34 16.41 4.02 5.76 2.68 9.61 4.07 11.55 4.18 1.57-.11 5.71-1.67 12.42-4.69 6.71-3.01 12.44-4.34 17.18-4 12.7.63 22.75 5.37 30.15 14.21-11.06 6.74-16.48 16.03-16.27 27.87.21 9.29 3.86 17.07 10.95 23.33 7.09 6.26 15.34 9.81 24.75 10.66-2.14 6.74-4.82 13.51-8.03 20.3zM119.22 33.64c0-7.29 2.59-14.07 7.77-20.35 5.18-6.27 11.57-10.42 19.16-12.44.85 6.84-.71 13.41-4.68 19.71-3.97 6.3-9.52 10.65-16.65 13.08-.94-.01-5.6-0.01-5.6-0.01z" />
-                </svg>
-                <span>Continue with Apple</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleSocialLogin('Facebook')}
-                className="w-full py-2.5 px-4 rounded-full border border-slate-200 hover:bg-slate-50 active:scale-[0.99] transition flex items-center justify-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-700 shadow-xs cursor-pointer min-h-[44px]"
-              >
-                <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
-                  <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                </svg>
-                <span>Continue with Facebook</span>
-              </button>
-            </div>
           </div>
         )}
 
@@ -498,52 +434,6 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 </button>
               </div>
 
-              {/* Divider: Or */}
-              <div className="relative flex items-center justify-center my-3">
-                <div className="border-t border-slate-200 w-full" />
-                <span className="bg-white px-3 text-xs text-slate-400 font-medium absolute">
-                  Or
-                </span>
-              </div>
-
-              {/* Circular Social Buttons Row */}
-              <div className="flex items-center justify-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => handleSocialLogin('Google')}
-                  className="w-10 h-10 rounded-full border border-slate-200 hover:border-slate-300 hover:bg-slate-50 flex items-center justify-center shadow-xs transition cursor-pointer"
-                  title="Sign in with Google"
-                >
-                  <svg className="w-4 h-4" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
-                    <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.36 24 12 24z"/>
-                    <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.14-1.55.38-2.27V6.58H1.25C.45 8.16 0 9.97 0 12s.45 3.84 1.25 5.42l4.03-3.15z"/>
-                    <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.36 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
-                  </svg>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleSocialLogin('Apple')}
-                  className="w-10 h-10 rounded-full border border-slate-200 hover:border-slate-300 hover:bg-slate-50 flex items-center justify-center shadow-xs transition cursor-pointer"
-                  title="Sign in with Apple"
-                >
-                  <svg className="w-4 h-4 fill-current text-slate-900" viewBox="0 0 170 170">
-                    <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.03-7.61-7.74-11.73-14.14-5.35-8.36-9.57-17.58-12.67-27.65-3.09-10.07-4.64-19.78-4.64-29.13 0-12.7 3.3-23.47 9.89-32.32 6.6-8.85 14.93-13.33 25-13.46 5.18 0 10.65 1.34 16.41 4.02 5.76 2.68 9.61 4.07 11.55 4.18 1.57-.11 5.71-1.67 12.42-4.69 6.71-3.01 12.44-4.34 17.18-4 12.7.63 22.75 5.37 30.15 14.21-11.06 6.74-16.48 16.03-16.27 27.87.21 9.29 3.86 17.07 10.95 23.33 7.09 6.26 15.34 9.81 24.75 10.66-2.14 6.74-4.82 13.51-8.03 20.3zM119.22 33.64c0-7.29 2.59-14.07 7.77-20.35 5.18-6.27 11.57-10.42 19.16-12.44.85 6.84-.71 13.41-4.68 19.71-3.97 6.3-9.52 10.65-16.65 13.08-.94-.01-5.6-0.01-5.6-0.01z" />
-                  </svg>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleSocialLogin('Facebook')}
-                  className="w-10 h-10 rounded-full border border-slate-200 hover:border-slate-300 hover:bg-slate-50 flex items-center justify-center shadow-xs transition cursor-pointer"
-                  title="Sign in with Facebook"
-                >
-                  <svg className="w-4 h-4" viewBox="0 0 24 24">
-                    <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                  </svg>
-                </button>
-              </div>
 
               {/* Bottom Link: Don't have an account? Sign Up -> Automatically changes to Sign Up */}
               <div className="pt-2 text-center">
@@ -738,52 +628,6 @@ export function LoginPage({ onLoginSuccess }: LoginPageProps) {
                 </button>
               </div>
 
-              {/* Divider: Or */}
-              <div className="relative flex items-center justify-center my-3">
-                <div className="border-t border-slate-200 w-full" />
-                <span className="bg-white px-3 text-xs text-slate-400 font-medium absolute">
-                  Or
-                </span>
-              </div>
-
-              {/* Circular Social Buttons Row */}
-              <div className="flex items-center justify-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => handleSocialLogin('Google')}
-                  className="w-10 h-10 rounded-full border border-slate-200 hover:border-slate-300 hover:bg-slate-50 flex items-center justify-center shadow-xs transition cursor-pointer"
-                  title="Sign up with Google"
-                >
-                  <svg className="w-4 h-4" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
-                    <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.36 24 12 24z"/>
-                    <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.14-1.55.38-2.27V6.58H1.25C.45 8.16 0 9.97 0 12s.45 3.84 1.25 5.42l4.03-3.15z"/>
-                    <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.36 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
-                  </svg>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleSocialLogin('Apple')}
-                  className="w-10 h-10 rounded-full border border-slate-200 hover:border-slate-300 hover:bg-slate-50 flex items-center justify-center shadow-xs transition cursor-pointer"
-                  title="Sign up with Apple"
-                >
-                  <svg className="w-4 h-4 fill-current text-slate-900" viewBox="0 0 170 170">
-                    <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.7-3.03-7.61-7.74-11.73-14.14-5.35-8.36-9.57-17.58-12.67-27.65-3.09-10.07-4.64-19.78-4.64-29.13 0-12.7 3.3-23.47 9.89-32.32 6.6-8.85 14.93-13.33 25-13.46 5.18 0 10.65 1.34 16.41 4.02 5.76 2.68 9.61 4.07 11.55 4.18 1.57-.11 5.71-1.67 12.42-4.69 6.71-3.01 12.44-4.34 17.18-4 12.7.63 22.75 5.37 30.15 14.21-11.06 6.74-16.48 16.03-16.27 27.87.21 9.29 3.86 17.07 10.95 23.33 7.09 6.26 15.34 9.81 24.75 10.66-2.14 6.74-4.82 13.51-8.03 20.3zM119.22 33.64c0-7.29 2.59-14.07 7.77-20.35 5.18-6.27 11.57-10.42 19.16-12.44.85 6.84-.71 13.41-4.68 19.71-3.97 6.3-9.52 10.65-16.65 13.08-.94-.01-5.6-0.01-5.6-0.01z" />
-                  </svg>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleSocialLogin('Facebook')}
-                  className="w-10 h-10 rounded-full border border-slate-200 hover:border-slate-300 hover:bg-slate-50 flex items-center justify-center shadow-xs transition cursor-pointer"
-                  title="Sign up with Facebook"
-                >
-                  <svg className="w-4 h-4" viewBox="0 0 24 24">
-                    <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                  </svg>
-                </button>
-              </div>
 
               {/* Bottom Link: Already have an account? Sign In -> Automatically changes to Sign In */}
               <div className="pt-2 text-center">

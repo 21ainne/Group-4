@@ -7,7 +7,8 @@ import {
   getSubjects, 
   saveSubject, 
   deleteSubject, 
-  getStudents 
+  getStudents,
+  getUsers 
 } from '../../storage';
 import { 
   School, 
@@ -442,14 +443,27 @@ export function ClassSubjectManagement({ onDataChanged }: ClassSubjectManagement
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Assigned Class Adviser</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Assigned Class Adviser (Instructor Account) *
+                </label>
                 <input
                   type="text"
+                  list="class-instructor-list"
                   placeholder="e.g. Prof. Elena Vance"
                   value={classFormData.adviser || ''}
                   onChange={(e) => setClassFormData({ ...classFormData, adviser: e.target.value })}
                   className="w-full text-xs p-2.5 border border-slate-300 rounded-lg text-black bg-white focus:outline-none focus:ring-2 focus:ring-sky-500"
                 />
+                <datalist id="class-instructor-list">
+                  {getUsers().filter((u) => u.role === 'instructor').map((inst) => (
+                    <option key={inst.id} value={inst.fullName}>
+                      {inst.fullName} ({inst.department})
+                    </option>
+                  ))}
+                </datalist>
+                <p className="text-[11px] text-slate-500 mt-1">
+                  Assign this class to an instructor account. Only the registrar can assign classes and students to instructors.
+                </p>
               </div>
 
               <div className="pt-3 border-t border-slate-200 flex justify-end gap-2">

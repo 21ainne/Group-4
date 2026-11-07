@@ -428,7 +428,7 @@ export function StudentManagement({ classes, onDataChanged }: StudentManagementP
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">Class / Section *</label>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Class / Section (Assigned Instructor) *</label>
                   <select
                     value={formData.classId || classes[0]?.id}
                     onChange={(e) => setFormData({ ...formData, classId: e.target.value })}
@@ -436,10 +436,13 @@ export function StudentManagement({ classes, onDataChanged }: StudentManagementP
                   >
                     {classes.map((cls) => (
                       <option key={cls.id} value={cls.id}>
-                        {cls.name}
+                        {cls.name} {cls.adviser ? `— Instructor: ${cls.adviser}` : ''}
                       </option>
                     ))}
                   </select>
+                  <p className="text-[10px] text-slate-500 mt-1">
+                    Student will be enrolled under this class and assigned to the instructor.
+                  </p>
                 </div>
 
                 <div>

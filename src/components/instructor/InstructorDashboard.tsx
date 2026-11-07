@@ -13,11 +13,7 @@ import {
   getSubjects, 
   getStudents, 
   getAttendanceRecords, 
-  saveAttendanceRecord,
-  saveStudent,
-  saveClass,
-  saveSubject,
-  resetToDemoData 
+  saveAttendanceRecord
 } from '../../storage';
 import { 
   Home, 
@@ -40,7 +36,6 @@ import {
   Download, 
   Mail, 
   LogOut, 
-  RotateCcw, 
   UserCheck, 
   Send,
   User as UserIcon,
@@ -113,11 +108,7 @@ export function InstructorDashboard({ currentUser, onLogout, onResetData }: Inst
   const [showQuickSearchModal, setShowQuickSearchModal] = useState(false);
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
-  const [showNewStudentModal, setShowNewStudentModal] = useState(false);
-  const [showNewClassModal, setShowNewClassModal] = useState(false);
-  const [showNewSubjectModal, setShowNewSubjectModal] = useState(false);
   const [showConfirmLogout, setShowConfirmLogout] = useState(false);
-  const [showConfirmReset, setShowConfirmReset] = useState(false);
   const [isSupabaseModalOpen, setIsSupabaseModalOpen] = useState(false);
 
   // Absence excuse requests mock list
@@ -385,40 +376,7 @@ export function InstructorDashboard({ currentUser, onLogout, onResetData }: Inst
     }
   };
 
-  // New Student State
-  const [newStudentName, setNewStudentName] = useState('');
-  const [newStudentId, setNewStudentId] = useState('');
-  const [newStudentGender, setNewStudentGender] = useState<'Male' | 'Female'>('Male');
-  const [newStudentClass, setNewStudentClass] = useState(classes[0]?.id || '');
-  const [newStudentEmail, setNewStudentEmail] = useState('');
 
-  const handleAddStudent = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newStudentName.trim() || !newStudentId.trim()) return;
-    const parts = newStudentName.trim().split(' ');
-    const firstName = parts[0] || 'Student';
-    const lastName = parts.slice(1).join(' ') || 'User';
-    const student: Student = {
-      id: `stud-${Date.now()}`,
-      studentNumber: newStudentId.trim(),
-      firstName,
-      lastName,
-      gender: newStudentGender,
-      classId: newStudentClass,
-      guardianName: 'Parent / Guardian',
-      guardianPhone: '09170000000',
-      email: newStudentEmail.trim() || `${newStudentId.toLowerCase()}@school.edu`,
-      status: 'Active',
-      enrollmentDate: new Date().toISOString().split('T')[0],
-    };
-    saveStudent(student);
-    setStudents(getStudents());
-    setShowNewStudentModal(false);
-    setNewStudentName('');
-    setNewStudentId('');
-    setSaveToast(`Student ${firstName} ${lastName} enrolled successfully.`);
-    setTimeout(() => setSaveToast(null), 3000);
-  };
 
   // Export CSV of Attendance History
   const handleExportCSV = () => {
@@ -555,13 +513,6 @@ export function InstructorDashboard({ currentUser, onLogout, onResetData }: Inst
                       className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-sm text-xs font-semibold cursor-pointer transition shadow-xs"
                     >
                       Sign Out
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => { setShowConfirmReset(true); setUserDropdownOpen(false); }}
-                      className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-sm text-xs font-semibold cursor-pointer border border-slate-200 transition"
-                    >
-                      Reset Demo Storage
                     </button>
                   </div>
 
@@ -719,20 +670,6 @@ export function InstructorDashboard({ currentUser, onLogout, onResetData }: Inst
                   >
                     • Classes & Sections List
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => { setShowNewClassModal(true); }}
-                    className="w-full text-left py-1 text-slate-300 hover:text-white block cursor-pointer"
-                  >
-                    • + Create New Class
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { setShowNewSubjectModal(true); }}
-                    className="w-full text-left py-1 text-slate-300 hover:text-white block cursor-pointer"
-                  >
-                    • + Add Subject / Course
-                  </button>
                 </div>
               )}
             </div>
@@ -823,13 +760,6 @@ export function InstructorDashboard({ currentUser, onLogout, onResetData }: Inst
                     className="w-full text-left py-1 text-slate-300 hover:text-white block cursor-pointer"
                   >
                     • Student Masterlist
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { setShowNewStudentModal(true); }}
-                    className="w-full text-left py-1 text-slate-300 hover:text-white block cursor-pointer"
-                  >
-                    • + Enroll New Student
                   </button>
                 </div>
               )}
@@ -982,124 +912,6 @@ export function InstructorDashboard({ currentUser, onLogout, onResetData }: Inst
                   <X className="w-3.5 h-3.5" />
                 </button>
               </div>
-            )}
-
-            {/* ========================================================================= */}
-            {/* 4. THE 8 HIGH-CONTRAST COLORED CARDS GRID (ATTENDANCE SPECIFIC) */}
-            {/* VISIBLE ONLY ON HOMEPAGE / DASHBOARD */}
-            {/* ========================================================================= */}
-            {activeTab === 'dashboard' && (
-              <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
-              
-              {/* Card 1: Enrolled Students (Cyan `#00c0ef` / `#00b0e9`) */}
-              <div 
-                onClick={() => setActiveTab('all_students')}
-                className="bg-[#00c0ef] hover:bg-[#00b0e9] text-white p-4 sm:p-5 rounded-sm shadow-xs transition cursor-pointer flex items-center justify-between min-h-[92px] group"
-              >
-                <div>
-                  <div className="text-3xl sm:text-4xl font-extrabold leading-none tracking-tight">
-                    {students.length > 0 ? students.length : '38'}
-                  </div>
-                  <div className="text-xs sm:text-sm font-semibold mt-1 opacity-95 tracking-wide">
-                    Enrolled Students
-                  </div>
-                </div>
-                <Users className="w-10 h-10 text-white/70 group-hover:scale-105 transition-transform shrink-0" />
-              </div>
-
-              {/* Card 2: Recorded Sessions (Green `#00a65a`) */}
-              <div 
-                onClick={() => setActiveTab('attendance_logs')}
-                className="bg-[#00a65a] hover:bg-[#009551] text-white p-4 sm:p-5 rounded-sm shadow-xs transition cursor-pointer flex items-center justify-between min-h-[92px] group"
-              >
-                <div>
-                  <div className="text-3xl sm:text-4xl font-extrabold leading-none tracking-tight">
-                    {attendanceRecords.length > 0 ? attendanceRecords.length : '14'}
-                  </div>
-                  <div className="text-xs sm:text-sm font-semibold mt-1 opacity-95 tracking-wide">
-                    Recorded Sessions
-                  </div>
-                </div>
-                <UserCheck className="w-10 h-10 text-white/70 group-hover:scale-105 transition-transform shrink-0" />
-              </div>
-
-              {/* Card 3: Classes & Subjects (Red `#dd4b39`) */}
-              <div 
-                onClick={() => setActiveTab('manage_classes')}
-                className="bg-[#dd4b39] hover:bg-[#d73925] text-white p-4 sm:p-5 rounded-sm shadow-xs transition cursor-pointer flex items-center justify-between min-h-[92px] group"
-              >
-                <div>
-                  <div className="text-3xl sm:text-4xl font-extrabold leading-none tracking-tight">
-                    {classes.length + subjects.length}
-                  </div>
-                  <div className="text-xs sm:text-sm font-semibold mt-1 opacity-95 tracking-wide">
-                    Classes & Subjects
-                  </div>
-                </div>
-                <GraduationCap className="w-10 h-10 text-white/70 group-hover:scale-105 transition-transform shrink-0" />
-              </div>
-
-              {/* Card 4: Attendance Rate (Amber / Orange `#f39c12`) */}
-              <div 
-                onClick={() => setShowSummaryModal(true)}
-                className="bg-[#f39c12] hover:bg-[#e08e0b] text-white p-4 sm:p-5 rounded-sm shadow-xs transition cursor-pointer flex items-center justify-between min-h-[92px] group"
-              >
-                <div>
-                  <div className="text-3xl sm:text-4xl font-extrabold leading-none tracking-tight">
-                    {overallAttendanceRate}%
-                  </div>
-                  <div className="text-xs sm:text-sm font-semibold mt-1 opacity-95 tracking-wide">
-                    Attendance Rate
-                  </div>
-                </div>
-                <Percent className="w-10 h-10 text-white/70 group-hover:scale-105 transition-transform shrink-0" />
-              </div>
-
-              {/* Card 5: Manage Classes (Red `#dd4b39`) */}
-              <div 
-                onClick={() => setActiveTab('manage_classes')}
-                className="bg-[#dd4b39] hover:bg-[#d73925] text-white p-4 sm:p-5 rounded-sm shadow-xs transition cursor-pointer flex items-center justify-between min-h-[72px] group"
-              >
-                <div className="text-sm sm:text-base font-bold tracking-wide">
-                  Manage Classes
-                </div>
-                <GraduationCap className="w-7 h-7 text-white/80 group-hover:scale-105 transition-transform shrink-0" />
-              </div>
-
-              {/* Card 6: Manage Students (Amber / Orange `#f39c12`) */}
-              <div 
-                onClick={() => setActiveTab('manage_students')}
-                className="bg-[#f39c12] hover:bg-[#e08e0b] text-white p-4 sm:p-5 rounded-sm shadow-xs transition cursor-pointer flex items-center justify-between min-h-[72px] group"
-              >
-                <div className="text-sm sm:text-base font-bold tracking-wide">
-                  Manage Students
-                </div>
-                <Users className="w-7 h-7 text-white/80 group-hover:scale-105 transition-transform shrink-0" />
-              </div>
-
-              {/* Card 7: Attendance Status (Cyan `#00c0ef`) */}
-              <div 
-                onClick={() => setShowStatusModal(true)}
-                className="bg-[#00c0ef] hover:bg-[#00b0e9] text-white p-4 sm:p-5 rounded-sm shadow-xs transition cursor-pointer flex items-center justify-between min-h-[72px] group"
-              >
-                <div className="text-sm sm:text-base font-bold tracking-wide">
-                  Attendance Status
-                </div>
-                <Layers className="w-7 h-7 text-white/80 group-hover:scale-105 transition-transform shrink-0" />
-              </div>
-
-              {/* Card 8: Excuse Slips (Green `#00a65a`) */}
-              <div 
-                onClick={() => setActiveTab('excuse_requests')}
-                className="bg-[#00a65a] hover:bg-[#009551] text-white p-4 sm:p-5 rounded-sm shadow-xs transition cursor-pointer flex items-center justify-between min-h-[72px] group"
-              >
-                <div className="text-sm sm:text-base font-bold tracking-wide">
-                  Absence Excuses
-                </div>
-                <FileText className="w-7 h-7 text-white/80 group-hover:scale-105 transition-transform shrink-0" />
-              </div>
-
-            </section>
             )}
 
             {/* ========================================================================= */}
@@ -1485,14 +1297,9 @@ export function InstructorDashboard({ currentUser, onLogout, onResetData }: Inst
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => setShowNewStudentModal(true)}
-                      className="py-1.5 px-3 bg-[#00a65a] hover:bg-[#009551] text-white text-xs font-bold rounded-sm shadow-xs transition cursor-pointer flex items-center gap-1"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Add Student</span>
-                    </button>
+                    <span className="text-[11px] font-medium text-slate-500 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded">
+                      Enrolled by Registrar
+                    </span>
                   </div>
                 </div>
 
@@ -1617,13 +1424,9 @@ export function InstructorDashboard({ currentUser, onLogout, onResetData }: Inst
                       <h3 className="text-sm font-bold text-slate-900">Classes & Sections</h3>
                       <p className="text-[11px] text-slate-500">Class sections assigned for student attendance taking.</p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setShowNewClassModal(true)}
-                      className="py-1 px-2.5 bg-[#00a65a] hover:bg-[#009551] text-white text-xs font-bold rounded-sm shadow-xs transition cursor-pointer"
-                    >
-                      + Add Class
-                    </button>
+                    <span className="text-[11px] font-medium text-slate-500 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded">
+                      Assigned by Registrar
+                    </span>
                   </div>
 
                   <div className="border border-slate-200 rounded-sm overflow-x-auto">
@@ -1662,13 +1465,9 @@ export function InstructorDashboard({ currentUser, onLogout, onResetData }: Inst
                       <h3 className="text-sm font-bold text-slate-900">Curriculum Subjects & Courses</h3>
                       <p className="text-[11px] text-slate-500">Subjects tracked for daily attendance.</p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setShowNewSubjectModal(true)}
-                      className="py-1 px-2.5 bg-[#00c0ef] hover:bg-[#00b0e9] text-white text-xs font-bold rounded-sm shadow-xs transition cursor-pointer"
-                    >
-                      + Add Subject
-                    </button>
+                    <span className="text-[11px] font-medium text-slate-500 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded">
+                      Curriculum Directory
+                    </span>
                   </div>
 
                   <div className="border border-slate-200 rounded-sm overflow-x-auto">
@@ -1805,13 +1604,6 @@ export function InstructorDashboard({ currentUser, onLogout, onResetData }: Inst
                   >
                     Sign Out
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmReset(true)}
-                    className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-sm text-xs font-semibold cursor-pointer border border-slate-200 transition"
-                  >
-                    Reset Demo Storage
-                  </button>
                 </div>
               </div>
             )}
@@ -1933,14 +1725,9 @@ export function InstructorDashboard({ currentUser, onLogout, onResetData }: Inst
                     <h3 className="text-base font-bold text-slate-900">Manage Students Directory</h3>
                     <p className="text-xs text-slate-500">Configure student records and section enrollments.</p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setShowNewStudentModal(true)}
-                    className="py-1.5 px-3 bg-[#00a65a] hover:bg-[#009551] text-white text-xs font-bold rounded-sm shadow-xs transition cursor-pointer flex items-center gap-1"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Enroll Student</span>
-                  </button>
+                  <span className="text-[11px] font-medium text-slate-500 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded">
+                    Managed by Registrar
+                  </span>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -2171,231 +1958,8 @@ export function InstructorDashboard({ currentUser, onLogout, onResetData }: Inst
         </div>
       )}
 
-      {/* Add Student Modal */}
-      {showNewStudentModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-          <div className="bg-white rounded-lg shadow-2xl max-w-md w-full border border-slate-200 p-5 space-y-4 text-xs">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-              <h3 className="font-bold text-slate-900 text-sm">Enroll New Student</h3>
-              <button type="button" onClick={() => setShowNewStudentModal(false)} className="text-slate-400 hover:text-slate-600 cursor-pointer">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
 
-            <form onSubmit={handleAddStudent} className="space-y-3">
-              <div>
-                <label className="font-semibold text-slate-700 mb-1 block">Full Name</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Christian Dela Cruz"
-                  value={newStudentName}
-                  onChange={(e) => setNewStudentName(e.target.value)}
-                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded focus:bg-white focus:outline-none focus:border-[#00c0ef]"
-                />
-              </div>
 
-              <div>
-                <label className="font-semibold text-slate-700 mb-1 block">Student ID Number</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. 2026-0099"
-                  value={newStudentId}
-                  onChange={(e) => setNewStudentId(e.target.value)}
-                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded focus:bg-white focus:outline-none focus:border-[#00c0ef]"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="font-semibold text-slate-700 mb-1 block">Gender</label>
-                  <select
-                    value={newStudentGender}
-                    onChange={(e) => setNewStudentGender(e.target.value as 'Male' | 'Female')}
-                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded"
-                  >
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="font-semibold text-slate-700 mb-1 block">Class Section</label>
-                  <select
-                    value={newStudentClass}
-                    onChange={(e) => setNewStudentClass(e.target.value)}
-                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded"
-                  >
-                    {classes.map((c) => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="font-semibold text-slate-700 mb-1 block">Student / Guardian Email</label>
-                <input
-                  type="email"
-                  placeholder="student@school.edu"
-                  value={newStudentEmail}
-                  onChange={(e) => setNewStudentEmail(e.target.value)}
-                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded focus:bg-white focus:outline-none focus:border-[#00c0ef]"
-                />
-              </div>
-
-              <div className="pt-2 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowNewStudentModal(false)}
-                  className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-1.5 bg-[#00a65a] hover:bg-[#009551] text-white font-bold rounded cursor-pointer"
-                >
-                  Save Student
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Add Class Modal */}
-      {showNewClassModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-          <div className="bg-white rounded-lg shadow-2xl max-w-sm w-full border border-slate-200 p-5 space-y-3 text-xs">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-              <h3 className="font-bold text-slate-900 text-sm">Add Class Section</h3>
-              <button type="button" onClick={() => setShowNewClassModal(false)} className="text-slate-400 hover:text-slate-600 cursor-pointer">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const form = e.target as HTMLFormElement;
-                const name = (form.elements.namedItem('className') as HTMLInputElement).value;
-                const grade = (form.elements.namedItem('gradeLevel') as HTMLInputElement).value;
-                const newCls: ClassItem = {
-                  id: `cls-${Date.now()}`,
-                  name,
-                  gradeLevel: grade || 'Grade 10',
-                  section: name.split('-')[1]?.trim() || 'A',
-                  academicYear: '2026-2027',
-                  room: 'Room 201',
-                  adviser: currentUser.fullName,
-                };
-                saveClass(newCls);
-                setClasses(getClasses());
-                setShowNewClassModal(false);
-                setSaveToast(`Class ${name} created successfully!`);
-              }}
-              className="space-y-3"
-            >
-              <div>
-                <label className="font-semibold text-slate-700 mb-1 block">Class Name</label>
-                <input name="className" required placeholder="e.g. Grade 12 - STEM Alpha" className="w-full p-2 bg-slate-50 border border-slate-200 rounded" />
-              </div>
-              <div>
-                <label className="font-semibold text-slate-700 mb-1 block">Grade Level</label>
-                <input name="gradeLevel" required placeholder="e.g. Grade 12" className="w-full p-2 bg-slate-50 border border-slate-200 rounded" />
-              </div>
-              <button type="submit" className="w-full py-2 bg-[#00a65a] hover:bg-[#009551] text-white font-bold rounded cursor-pointer">
-                Create Class
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Add Subject Modal */}
-      {showNewSubjectModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-          <div className="bg-white rounded-lg shadow-2xl max-w-sm w-full border border-slate-200 p-5 space-y-3 text-xs">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-              <h3 className="font-bold text-slate-900 text-sm">Add Course Subject</h3>
-              <button type="button" onClick={() => setShowNewSubjectModal(false)} className="text-slate-400 hover:text-slate-600 cursor-pointer">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const form = e.target as HTMLFormElement;
-                const name = (form.elements.namedItem('subName') as HTMLInputElement).value;
-                const code = (form.elements.namedItem('subCode') as HTMLInputElement).value;
-                const newSub: SubjectItem = {
-                  id: `sub-${Date.now()}`,
-                  name,
-                  code,
-                  department: 'Academics',
-                  units: 3,
-                };
-                saveSubject(newSub);
-                setSubjects(getSubjects());
-                setShowNewSubjectModal(false);
-                setSaveToast(`Subject ${name} added!`);
-              }}
-              className="space-y-3"
-            >
-              <div>
-                <label className="font-semibold text-slate-700 mb-1 block">Subject Name</label>
-                <input name="subName" required placeholder="e.g. Earth & Life Science" className="w-full p-2 bg-slate-50 border border-slate-200 rounded" />
-              </div>
-              <div>
-                <label className="font-semibold text-slate-700 mb-1 block">Subject Code</label>
-                <input name="subCode" required placeholder="e.g. ELS-102" className="w-full p-2 bg-slate-50 border border-slate-200 rounded font-mono" />
-              </div>
-              <button type="submit" className="w-full py-2 bg-[#00c0ef] hover:bg-[#00b0e9] text-white font-bold rounded cursor-pointer">
-                Add Subject
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Reset Confirmation Modal */}
-      {showConfirmReset && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
-          <div className="bg-white rounded-lg shadow-2xl max-w-sm w-full border border-slate-200 p-5 space-y-3 text-xs">
-            <h3 className="font-bold text-slate-900 text-sm">Reset Attendance Demo Data?</h3>
-            <p className="text-slate-600">
-              This will restore all student attendance logs, rosters, and class schedules back to initial school demo records.
-            </p>
-            <div className="flex justify-end gap-2 pt-2">
-              <button
-                type="button"
-                onClick={() => setShowConfirmReset(false)}
-                className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-semibold cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  if (onResetData) {
-                    onResetData();
-                  } else {
-                    resetToDemoData();
-                    window.location.reload();
-                  }
-                  setShowConfirmReset(false);
-                }}
-                className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded font-bold cursor-pointer"
-              >
-                Confirm Reset
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Logout Confirmation Modal */}
       {showConfirmLogout && (
